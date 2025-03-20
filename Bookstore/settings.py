@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'main',
     'goods',
     'users',
+    'carts',
 
     # Установленные приложения
     'debug_toolbar',
