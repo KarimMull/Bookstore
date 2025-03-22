@@ -10,9 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static "deps/css/bootstrap/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "deps/css/my_css.css" %}">
-
+    <!-- Стиль footer-a для главной страницы -->
     {% block css %}
-    
+
     {% endblock %}
     <!-- Favicons for different platforms -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static "deps/favicon/apple-touch-icon.png" %}">
@@ -26,7 +26,7 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
             <div class="container">
-                <a class="navbar-brand" href= "{% url "main:index" %}">Home</a>
+                <a class="navbar-brand" href="{% url "main:index" %}">Home</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
                         </li>
                         {% if not user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link  text-white" href="{% url "users:login" %}">Войти</a>
+                                <a class="nav-link  text-white" href="{% url "user:login" %}">Войти</a>
                             </li>
                         {% else %}
                             <li class="nav-item dropdown ">
@@ -60,7 +60,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item  text-white" href="carts/cart.html">Корзина</a></li>
-                                    <li><a class="dropdown-item  text-white" href="{% url "users:profile" %}">Личный кабинет</a>
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:profile" %}">Личный кабинет</a>
                                     </li>
                                     {% if user.is_admin or user.is_staff %}
                                         <li><a class="dropdown-item  text-white" href="{% url "admin:index" %}">Админ панель</a></li>
@@ -68,12 +68,12 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item  text-white" href="{% url "users:logout" %}">Выйти</a></li>
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:logout" %}">Выйти</a></li>
                                 </ul>
                             </li>
                         {% endif %}
                     </ul>
-                    <form class="d-flex" role="search" action="{% url "catalog:search"%}" method="get">
+                    <form class="d-flex" role="search" action="{% url "catalog:search" %}" method="get">
                         <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success text-white" type="submit">Поиск</button>
                     </form>
@@ -98,40 +98,11 @@
                         {% for category in categories %}
                             <li><a class="dropdown-item text-white" href="{% url "catalog:index" category.slug %}">{{category.name}}</a></li>
                         {% endfor %}
+
                     </ul>
                 </div>
                 <!-- Значек корзины, вызывает модальное окно -->
-                <div>
-                    <button type="button" class="btn btn-dark btn-secondary d-flex" id="modalButton"
-                        aria-expanded="false">
-                        <img class="mx-1" src="{% static "deps/icons/basket2-fill.svg" %}" alt="Catalog Icon" width="24"
-                            height="24">
-                        <span id="goods-in-cart-count">0</span>
-                    </button>
-                </div>
-                <!-- Разметка модального окна корзины -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <h3 class="text-center mb-4">Корзина</h3>
-                                <div class="container" id="cart-items-container">
-                                    <!-- Разметка корзины -->
-                                    {% include "carts/includes/included_cart.html" %}
-                                    <!-- Закончилась разметка корзины -->
-                                </div>
-                                <a class="btn btn-dark" href="orders/create_order.html">
-                                    Оформить заказ
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% block modal_cart %}{% endblock  %}
                 <!-- Закончилась разметка модального окна -->
             </div>
         </div>
@@ -142,18 +113,15 @@
                     <!-- Пустой блок на Ваше усмотрение -->
                 </div>
                 <div class="col-lg-10">
+                    <!-- Контент на странице -->
                     {% include "includes/notifications.html" %}
-                    {% block content %}
-                     
-                    {% endblock %}
+                    {% block content %}{% endblock %}
                 </div>
             </div>
         </div>
     </section>
 
-    {% block footer %}
-    
-    {% endblock %}
+    {% block footer %}{% endblock %}
 
     <script src="{% static "deps/js/jquery/jquery-3.7.0.min.js" %}"></script>
     <script src="{% static "deps/js/jquery-events.js" %}"></script>
