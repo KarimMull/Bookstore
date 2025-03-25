@@ -15,7 +15,7 @@ class CartQueryset(models.QuerySet):
 
 class Cart(models.Model):
     user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,   # ✅ всегда используем через settings
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
