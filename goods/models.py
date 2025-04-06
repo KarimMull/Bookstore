@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from users.models import User
 
 
 class Categories(models.Model):
@@ -8,7 +9,7 @@ class Categories(models.Model):
 
     class Meta:
         db_table = 'category'
-        verbose_name = 'Категорию'
+        verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         ordering = ("id",)
 
@@ -26,7 +27,6 @@ class Products(models.Model):
     quantity = models.PositiveIntegerField(default=0, verbose_name='Количество')
     category = models.ForeignKey(to=Categories, on_delete=models.CASCADE, verbose_name='Категория')
 
-
     class Meta:
         db_table = 'product'
         verbose_name = 'Продукт'
@@ -37,15 +37,27 @@ class Products(models.Model):
         return f'{self.name} Количество - {self.quantity}'
 
     def get_absolute_url(self):
-        return reverse("catalog:product", kwargs={"product_slug": self.slug})
-    
+        return reverse("catalog:product", kwargs={"slug": self.slug})
 
     def display_id(self):
         return f"{self.id:05}"
 
-
     def sell_price(self):
         if self.discount:
-            return round(self.price - self.price*self.discount/100, 2)
-        
+            return round(self.price - self.price * self.discount / 100, 2)
         return self.price
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    product = models.ForeignKey('Products', on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField(verbose_name="Комментарий")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
+    def __str__(self):
+        return f'{self.user.username}: {self.text[:30]}...'

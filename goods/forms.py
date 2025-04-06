@@ -1,10 +1,18 @@
 from django import forms
-from .models import Comment
+from goods.models import Comment
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ('text',)
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Оставьте комментарий...'}),
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Напишите свой комментарий...'
+            }),
+        }
+        labels = {
+            'text': 'Ваш комментарий'
         }
