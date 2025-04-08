@@ -43,10 +43,20 @@
                             {% endif %}
                         </div>
 
-                        <!-- Имя и текст -->
+                        <!-- Имя, рейтинг, текст -->
                         <div class="w-100">
                             <div class="d-flex justify-content-between">
-                                <h6 class="mb-1">{{ comment.user.username }}</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <h6 class="mb-0">{{ comment.user.username }}</h6>
+                                    <div>
+                                        {% for i in "12345"|slice:":comment.rating"|make_list %}
+                                            <span class="text-warning">★</span>
+                                        {% endfor %}
+                                        {% for i in "12345"|slice:"comment.rating:"|make_list %}
+                                            <span class="text-secondary">★</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                                 <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
                             </div>
                             <p class="mt-2 mb-0">{{ comment.text }}</p>
@@ -61,6 +71,19 @@
         {% if user.is_authenticated %}
             <form method="post" class="card p-4 shadow-sm mt-4">
                 {% csrf_token %}
+
+                <!-- Интерактивный рейтинг -->
+                <div class="mb-3">
+                    <label>Оценка:</label>
+                    <div id="star-rating" class="fs-4 text-warning" style="cursor: pointer;">
+                        {% for i in "12345"|make_list %}
+                            <span class="star" data-value="{{ i }}">★</span>
+                        {% endfor %}
+                    </div>
+                    {{ form.rating }}
+                </div>
+
+                <!-- Поле комментария -->
                 <div class="mb-3">
                     {{ form.text.label_tag }}
                     {{ form.text }}
@@ -70,6 +93,7 @@
                         </div>
                     {% endif %}
                 </div>
+
                 <button type="submit" class="btn btn-primary">💬 Добавить комментарий</button>
             </form>
         {% else %}
@@ -77,4 +101,38 @@
         {% endif %}
     </div>
 </div>
+
+<!-- ⭐ Скрипт звёзд -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll("#star-rating .star");
+        const ratingInput = document.querySelector("input[name='rating']");
+        let currentRating = parseInt(ratingInput.value || 5); // по умолчанию 5
+
+        const updateStars = (value) => {
+            stars.forEach(star => {
+                const starValue = parseInt(star.getAttribute("data-value"));
+                star.textContent = starValue <= value ? "★" : "☆";
+            });
+        };
+
+        stars.forEach(star => {
+            star.addEventListener("click", () => {
+                currentRating = parseInt(star.getAttribute("data-value"));
+                ratingInput.value = currentRating;
+                updateStars(currentRating);
+            });
+
+            star.addEventListener("mouseover", () => {
+                updateStars(parseInt(star.getAttribute("data-value")));
+            });
+
+            star.addEventListener("mouseout", () => {
+                updateStars(currentRating);
+            });
+        });
+
+        updateStars(currentRating);
+    });
+</script>
 {% endblock %}

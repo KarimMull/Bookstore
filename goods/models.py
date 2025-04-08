@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from users.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Categories(models.Model):
@@ -52,6 +53,11 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     product = models.ForeignKey('Products', on_delete=models.CASCADE, related_name='comments')
     text = models.TextField(verbose_name="Комментарий")
+    rating = models.PositiveSmallIntegerField(
+        verbose_name='Оценка',
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        default=5
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     class Meta:
