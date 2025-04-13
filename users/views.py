@@ -5,11 +5,11 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView
 from django.views.generic.edit import CreateView
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from carts.models import Cart
 from users.forms import UserLoginForm, UserRegistrationForm, ProfileForm
 from users.models import User
-
+from orders.models import Order
 
 class UserLoginView(LoginView):
     template_name = "users/login.html"
@@ -43,7 +43,8 @@ class UserRegistrationView(CreateView):
         return response
 
 
-class UserProfileView(UpdateView):
+
+class UserProfileView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileForm
     template_name = "users/profile.html"
@@ -55,6 +56,13 @@ class UserProfileView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Данные профиля обновлены")
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем заказы пользователя в контекст
+        user = self.request.user
+        context['orders'] = Order.objects.filter(user=user)  # Получаем заказы текущего пользователя
+        return context
 
 
 class UserCartView(TemplateView):
