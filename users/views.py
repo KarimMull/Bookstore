@@ -7,35 +7,30 @@ from django.views.generic import TemplateView, UpdateView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from carts.models import Cart
-from users.forms import UserLoginForm, UserRegistrationForm, ProfileForm
+from users.forms import UserRegistrationForm, ProfileForm
 from users.models import User
 from orders.models import Order
+from django.contrib.auth import login
+
+
+
 
 class UserLoginView(LoginView):
     template_name = "users/login.html"
-    form_class = UserLoginForm
     success_url = reverse_lazy("main:index")
 
     def form_valid(self, form):
-        session_key = self.request.session.session_key
         user = form.get_user()
-
-        if user:
-            auth.login(self.request, user)
-            if session_key:
-                Cart.objects.filter(user=user).delete()
-                Cart.objects.filter(session_key=session_key).update(user=user)
-            messages.success(self.request, f"{user.username}, Вы вошли в аккаунт")
-            return HttpResponseRedirect(self.get_success_url())
-
-        return super().form_invalid(form)
+        login(self.request, user)
+        messages.success(self.request, f"{user.username}, Вы вошли в аккаунт")
+        return super().form_valid(form)
 
 
 class UserRegistrationView(CreateView):
     model = User
     form_class = UserRegistrationForm
-    template_name = "users/registration.html"
-    success_url = reverse_lazy("users:login")
+    template_name = 'users/registration.html'
+    success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
         response = super().form_valid(form)

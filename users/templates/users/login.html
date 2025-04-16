@@ -34,6 +34,11 @@
                 <button type="submit" class="btn btn-primary">Войти</button>
             </div>
         </form>
+
+        <!-- Ссылка на страницу регистрации -->
+        <div class="text-center mt-3">
+            <p>Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}
