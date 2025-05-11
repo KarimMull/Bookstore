@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
+
     <!-- Блок с товаром -->
     <div class="card mb-4 custom-shadow p-4">
         <div class="row d-flex align-items-center">
@@ -45,7 +46,6 @@
                     <a href="{% url 'wishlist:add' product.id %}" class="btn btn-outline-secondary">
                         💖 В избранное
                     </a>
-                
                     <a href="{% url 'cart:cart_add' %}" class="btn btn-dark add-to-cart" data-product-id="{{ product.id }}">
                         {% csrf_token %}
                         🛒 Добавить в корзину
@@ -63,7 +63,6 @@
             {% for comment in comments %}
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body d-flex">
-                        <!-- Аватар -->
                         <div class="me-3">
                             {% if comment.user.image %}
                                 <img src="{{ comment.user.image.url }}" class="rounded-circle" width="50" height="50" alt="avatar">
@@ -71,8 +70,6 @@
                                 <img src="{% static 'deps/icons/default-avatar.png' %}" class="rounded-circle" width="50" height="50" alt="avatar">
                             {% endif %}
                         </div>
-
-                        <!-- Имя, рейтинг, текст -->
                         <div class="w-100">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
@@ -97,8 +94,6 @@
         {% if user.is_authenticated %}
             <form method="post" class="card p-4 shadow-sm mt-4">
                 {% csrf_token %}
-
-                <!-- Интерактивный рейтинг -->
                 <div class="mb-3">
                     <label>Оценка:</label>
                     <div id="star-rating" class="fs-4 text-warning" style="cursor: pointer;">
@@ -108,8 +103,6 @@
                     </div>
                     {{ form.rating }}
                 </div>
-
-                <!-- Поле комментария -->
                 <div class="mb-3">
                     {{ form.text.label_tag }}
                     {{ form.text }}
@@ -119,13 +112,38 @@
                         </div>
                     {% endif %}
                 </div>
-
                 <button type="submit" class="btn btn-primary">💬 Добавить комментарий</button>
             </form>
         {% else %}
             <p class="text-muted mt-3">🔐 Только зарегистрированные пользователи могут оставлять комментарии.</p>
         {% endif %}
     </div>
+
+    <!-- Блок недавно просмотренных -->
+    {% if recently_viewed %}
+        <div class="bg-white rounded shadow-lg p-4 mb-5">
+            <h4 class="mb-4">👀 Недавно просмотренные книги</h4>
+            <div class="row">
+                {% for item in recently_viewed %}
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card h-100 shadow-sm">
+                            <a href="{{ item.get_absolute_url }}">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                                {% else %}
+                                    <img src="{% static 'deps/images/Not found image.png' %}" class="card-img-top" alt="Нет изображения">
+                                {% endif %}
+                            </a>
+                            <div class="card-body">
+                                <h6 class="card-title">{{ item.name|truncatechars:45 }}</h6>
+                                <p class="card-text">{{ item.sell_price }} ₽</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 
 <!-- ⭐ Скрипт звёзд -->
@@ -133,7 +151,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const stars = document.querySelectorAll("#star-rating .star");
         const ratingInput = document.querySelector("input[name='rating']");
-        let currentRating = parseInt(ratingInput.value || 5); // по умолчанию 5
+        let currentRating = parseInt(ratingInput.value || 5);
 
         const updateStars = (value) => {
             stars.forEach(star => {

@@ -7,7 +7,6 @@ from goods.models import Products, Comment
 from goods.utils import q_search
 from goods.forms import CommentForm
 
-
 class CatalogView(ListView):
     model = Products
     template_name = "goods/catalog.html"
@@ -45,7 +44,6 @@ class CatalogView(ListView):
         context["slug_url"] = self.kwargs.get(self.slug_url_kwarg)
         return context
 
-
 class ProductView(DetailView):
     model = Products
     template_name = 'goods/product.html'
@@ -53,10 +51,28 @@ class ProductView(DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        recent = request.session.get('recently_viewed', [])
+        product_id = self.object.id
+
+        if product_id in recent:
+            recent.remove(product_id)
+        recent.insert(0, product_id)
+
+        request.session['recently_viewed'] = recent[:5]
+
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = CommentForm()
         context['comments'] = self.object.comments.select_related('user')
+
+        ids = self.request.session.get('recently_viewed', [])[1:]
+        context['recently_viewed'] = Products.objects.filter(id__in=ids)
+
         return context
 
     def post(self, request, *args, **kwargs):
