@@ -52,6 +52,9 @@
                             </li>
                         {% else %}
                             <li class="nav-item">
+                                <a class="nav-link  text-white" href="{% url "wishlist:view" %}">Избранное</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link  text-white" href="{% url "users:users_cart" %}">Корзина</a>
                             </li>
                             <li class="nav-item">

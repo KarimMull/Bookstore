@@ -41,11 +41,16 @@
                     <p class="text-danger">Скидка: {{ product.discount }}%</p>
                 {% endif %}
                 <p>{{ product.description }}</p>
-
-                <a href="{% url 'cart:cart_add' %}" class="btn btn-dark mt-3 add-to-cart" data-product-id="{{ product.id }}">
-                    {% csrf_token %}
-                    Добавить в корзину
-                </a>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'wishlist:add' product.id %}" class="btn btn-outline-secondary">
+                        💖 В избранное
+                    </a>
+                
+                    <a href="{% url 'cart:cart_add' %}" class="btn btn-dark add-to-cart" data-product-id="{{ product.id }}">
+                        {% csrf_token %}
+                        🛒 Добавить в корзину
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -75,9 +80,6 @@
                                     <div>
                                         {% for i in "12345"|slice:":comment.rating"|make_list %}
                                             <span class="text-warning">★</span>
-                                        {% endfor %}
-                                        {% for i in "12345"|slice:"comment.rating:"|make_list %}
-                                            <span class="text-secondary">★</span>
                                         {% endfor %}
                                     </div>
                                 </div>
