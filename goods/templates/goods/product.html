@@ -8,8 +8,21 @@
    style="top: 50%; left: 120px; transform: translateY(-50%); z-index: 1050; padding: 12px 20px; border-radius: 50px; font-weight: bold;">
     ← Назад
 </a>
-<div class="container mt-5">
 
+<!-- Стили для зума -->
+<style>
+    .zoom-container {
+        overflow: hidden;
+        position: relative;
+        cursor: zoom-in;
+    }
+
+    .zoom-image {
+        transition: transform 0.3s ease;
+    }
+</style>
+
+<div class="container mt-5">
     <!-- Блок с товаром -->
     <div class="card mb-4 custom-shadow p-4">
         <div class="row d-flex align-items-center">
@@ -18,16 +31,22 @@
                 <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="{{ product.image.url }}" class="d-block w-100" alt="Изображение продукта">
+                            <div class="zoom-container">
+                                <img src="{{ product.image.url }}" class="d-block w-100 zoom-image" alt="Изображение продукта">
+                            </div>
                         </div>
                         {% if product.image_2 %}
                         <div class="carousel-item">
-                            <img src="{{ product.image_2.url }}" class="d-block w-100" alt="Изображение продукта 2">
+                            <div class="zoom-container">
+                                <img src="{{ product.image_2.url }}" class="d-block w-100 zoom-image" alt="Изображение продукта 2">
+                            </div>
                         </div>
                         {% endif %}
                         {% if product.image_3 %}
                         <div class="carousel-item">
-                            <img src="{{ product.image_3.url }}" class="d-block w-100" alt="Изображение продукта 3">
+                            <div class="zoom-container">
+                                <img src="{{ product.image_3.url }}" class="d-block w-100 zoom-image" alt="Изображение продукта 3">
+                            </div>
                         </div>
                         {% endif %}
                     </div>
@@ -61,10 +80,9 @@
         </div>
     </div>
 
-    <!-- Блок комментариев -->
+    <!-- Комментарии -->
     <div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-4 mt-5 mb-5">
         <h4 class="mb-4">💬 Комментарии</h4>
-
         {% if comments %}
             {% for comment in comments %}
                 <div class="card mb-3 shadow-sm">
@@ -125,7 +143,7 @@
         {% endif %}
     </div>
 
-    <!-- Блок недавно просмотренных -->
+    <!-- Недавно просмотренные -->
     {% if recently_viewed %}
         <div class="bg-white rounded shadow-lg p-4 mb-5">
             <h4 class="mb-4">👀 Недавно просмотренные книги</h4>
@@ -152,7 +170,7 @@
     {% endif %}
 </div>
 
-<!-- ⭐ Скрипт звёзд -->
+<!-- Скрипт звёзд -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const stars = document.querySelectorAll("#star-rating .star");
@@ -183,6 +201,27 @@
         });
 
         updateStars(currentRating);
+    });
+</script>
+
+<!-- Скрипт пошагового зума -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const zoomImages = document.querySelectorAll(".zoom-container .zoom-image");
+        const MAX_SCALE = 2.5;
+        const SCALE_STEP = 0.2;
+
+        zoomImages.forEach(img => {
+            let currentScale = 1;
+
+            img.addEventListener("click", () => {
+                currentScale += SCALE_STEP;
+                if (currentScale > MAX_SCALE) {
+                    currentScale = 1;
+                }
+                img.style.transform = `scale(${currentScale})`;
+            });
+        });
     });
 </script>
 {% endblock %}
