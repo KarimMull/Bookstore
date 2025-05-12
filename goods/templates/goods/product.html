@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block content %}
+<!-- Плавающая кнопка "Назад" -->
+<a href="{{ request.META.HTTP_REFERER|default:'/' }}"
+   class="btn btn-warning position-fixed d-none d-lg-flex align-items-center shadow-lg animate__animated animate__fadeInRight"
+   style="top: 50%; left: 120px; transform: translateY(-50%); z-index: 1050; padding: 12px 20px; border-radius: 50px; font-weight: bold;">
+    ← Назад
+</a>
 <div class="container mt-5">
 
     <!-- Блок с товаром -->
